@@ -114,7 +114,64 @@ input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in sr
 .composer input:disabled, .composer button:disabled { opacity: .55; cursor: not-allowed; }
 .danger { color: var(--danger); }
 @media (max-width: 760px) {
-  .app-shell { grid-template-columns: 1fr; grid-template-rows: minmax(21rem, 42vh) minmax(26rem, 1fr); height: auto; min-height: 100vh; margin: 0; padding: 0; }
-  .sidebar, .chat-pane { border-radius: 0; box-shadow: none; }
-  .message { max-width: 88%; }
+  html, body { min-height: 100%; }
+  body { background: var(--panel); }
+  .app-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(18rem, 38dvh) minmax(28rem, 62dvh);
+    gap: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .sidebar, .chat-pane {
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .sidebar { border-top: 0; }
+  .chat-pane { border-bottom: 0; }
+  .topbar { padding: .8rem .9rem; }
+  h1 { font-size: 1.28rem; }
+  .eyebrow { font-size: .7rem; }
+  .panel { padding: .72rem .9rem; }
+  .chats-panel { padding-bottom: .8rem; }
+  label { margin-bottom: .35rem; font-size: .78rem; }
+  input { min-height: 2.75rem; padding: .68rem .78rem; font-size: 1rem; }
+  .input-row { grid-template-columns: minmax(0, 1fr) 4.4rem; }
+  .input-row button, .composer button:last-child { min-width: 4.4rem; min-height: 2.75rem; padding: .65rem .7rem; }
+  .icon-button { min-width: 2.75rem; height: 2.75rem; font-size: .84rem; }
+  .list { gap: .35rem; margin-top: .55rem; }
+  .result-item, .chat-item { grid-template-columns: 2.25rem minmax(0, 1fr); padding: .55rem; }
+  .avatar { width: 2.25rem; height: 2.25rem; font-size: .82rem; }
+  .hint, .item-preview { font-size: .76rem; }
+  .chat-header { min-height: 3.85rem; padding: .68rem .85rem; }
+  .chat-header span { font-size: .76rem; }
+  .privacy-strip { display: none; }
+  .messages { padding: .75rem .65rem; gap: .45rem; }
+  .message { max-width: 86%; padding: .52rem .62rem .4rem; font-size: .95rem; }
+  .message-meta { font-size: .64rem; }
+  .composer {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: .42rem;
+    padding: .55rem;
+    padding-bottom: max(.55rem, env(safe-area-inset-bottom));
+  }
+  .composer input { min-height: 2.85rem; }
+  .composer .danger { min-width: 3.2rem; width: 3.2rem; font-size: .72rem; }
+}
+
+@media (max-width: 430px) {
+  .app-shell { grid-template-rows: minmax(17rem, 36dvh) minmax(29rem, 64dvh); }
+  .topbar { padding: .7rem .8rem; }
+  .panel { padding: .62rem .8rem; }
+  .chat-header { padding: .62rem .75rem; }
+  .chat-header p { font-size: .95rem; }
+  .chat-header span { max-width: 14.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .message { max-width: 90%; }
 }
