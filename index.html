@@ -1,320 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
-<title>ChatApp</title>
-
-<link rel="stylesheet" href="styles.css">
-
-<meta name="theme-color" content="#128C7E">
-
-</head>
-
-<body>
-
-<div class="app-shell">
-
-<!-- Sidebar -->
-
-<aside class="sidebar" id="sidebar">
-
-<!-- Header -->
-
-<div class="topbar">
-
-<div>
-
-<p class="eyebrow">Private Chat</p>
-
-<h1>ChatApp</h1>
-
-</div>
-
-<button id="themeToggle" class="icon-button">
-
-🌙
-
-</button>
-
-</div>
-
-<!-- User Login -->
-
-<div class="panel">
-
-<label>Your User ID</label>
-
-<div class="input-row">
-
-<input
-id="currentUser"
-type="text"
-placeholder="Enter User ID">
-
-<button id="saveUser">
-
-Save
-
-</button>
-
-</div>
-
-<p id="identityStatus" class="hint">
-
-Choose your unique User ID
-
-</p>
-
-</div>
-
-<!-- Search -->
-
-<div class="panel">
-
-<label>Search User</label>
-
-<input
-
-id="searchUser"
-
-type="search"
-
-placeholder="Search by User ID"
-
-autocomplete="off"
-
-spellcheck="false"
-
-disabled
-
->
-
-<div
-
-id="searchResults"
-
-class="list">
-
-</div>
-
-</div>
-
-<!-- Chat List -->
-
-<section class="panel chats-panel">
-
-<div class="section-heading">
-
-<h2>
-
-Chats
-
-</h2>
-
-<span id="chatCount">
-
-0
-
-</span>
-
-</div>
-
-<div
-
-id="chatList"
-
-class="list">
-
-</div>
-
-</section>
-
-</aside>
-
-<!-- Chat Screen -->
-
-<section
-
-class="chat-pane"
-
-id="chatPane">
-
-<header class="chat-header">
-
-<button
-
-id="backBtn"
-
-class="icon-button">
-
-←
-
-</button>
-
-<div
-
-class="avatar"
-
-id="activeAvatar">
-
-?
-
-</div>
-
-<div>
-
-<p id="activeName">
-
-No Chat Selected
-
-</p>
-
-<span id="activeMeta">
-
-Search user and start chatting
-
-</span>
-
-</div>
-
-</header>
-<!-- Privacy Notice -->
-
-<div class="privacy-strip">
-
-<div>
-
-<strong>🔒 End-to-End Secure</strong>
-
-<p>
-Realtime private messaging powered by Firebase.
-</p>
-
-</div>
-
-</div>
-
-<!-- Messages -->
-
-<div class="messages" id="messages">
-
-<div class="empty-state">
-
-<h3>👋 Welcome</h3>
-
-<p>
-
-Search a User ID and start chatting instantly.
-
-</p>
-
-</div>
-
-</div>
-
-<!-- Message Box -->
-
-<form class="composer" id="composer">
-
-<button
-
-type="button"
-
-class="icon-button"
-
-id="emojiBtn">
-
-😊
-
-</button>
-
-<input
-
-id="messageInput"
-
-type="text"
-
-placeholder="Type a message..."
-
-autocomplete="off"
-
-disabled
-
->
-
-<button
-
-id="sendMessage"
-
-type="submit"
-
-disabled>
-
-➤
-
-</button>
-
-</form>
-
-</section>
-
-</div>
-
-<!-- Firebase -->
-
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-
-<!-- Mobile Navigation -->
-
-<script>
-
-const sidebar=document.getElementById("sidebar");
-
-const chatPane=document.getElementById("chatPane");
-
-const backBtn=document.getElementById("backBtn");
-
-if(window.innerWidth<768){
-
-chatPane.style.display="none";
-
-}
-
-window.openChat=function(){
-
-if(window.innerWidth<768){
-
-sidebar.style.display="none";
-
-chatPane.style.display="flex";
-
-backBtn.style.display="flex";
-
-}
-
-}
-
-backBtn.onclick=function(){
-
-sidebar.style.display="flex";
-
-chatPane.style.display="none";
-
-}
-
-</script>
-
-<script src="./app.js"></script>
-
-</body>
-
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Private Chat</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar" aria-label="Chats">
+        <section class="topbar">
+          <div>
+            <p class="eyebrow">Firebase Live</p>
+            <h1>ChatApp</h1>
+          </div>
+          <button class="icon-button" id="themeToggle" type="button" aria-label="Theme badle" title="Theme">Mode</button>
+        </section>
+
+        <section class="panel">
+          <label for="currentUser">Aapki User ID</label>
+          <div class="input-row">
+            <input id="currentUser" type="text" autocomplete="off" spellcheck="false" placeholder="jaise: goutam" />
+            <button id="saveUser" type="button">Save</button>
+          </div>
+          <p id="identityStatus" class="hint">Firebase connect ho raha hai...</p>
+        </section>
+
+        <section class="panel">
+          <label for="searchUser">User ID search karein</label>
+          <input id="searchUser" type="search" placeholder="exact ID: neha_22" autocomplete="off" spellcheck="false" disabled />
+          <div id="searchResults" class="list" aria-live="polite"></div>
+        </section>
+
+        <section class="panel chats-panel">
+          <div class="section-heading">
+            <h2>Chats</h2>
+            <span id="chatCount">0</span>
+          </div>
+          <div id="chatList" class="list"></div>
+        </section>
+      </aside>
+
+      <section class="chat-pane" aria-label="Private chat">
+        <header class="chat-header">
+          <div class="avatar" id="activeAvatar">?</div>
+          <div>
+            <p id="activeName">User search karke chat shuru karein</p>
+            <span id="activeMeta">Firebase real-time private thread ready hoga.</span>
+          </div>
+        </header>
+
+        <div class="privacy-strip">
+          <strong>Live</strong>
+          <p>Messages Firestore se real time sync hote hain. Production ke liye Firebase Console me security rules zaroor publish karein.</p>
+        </div>
+
+        <div class="messages" id="messages" aria-live="polite"></div>
+
+        <form class="composer" id="composer">
+          <button class="icon-button danger" type="button" id="clearChat" aria-label="Chat clear karein" title="Chat clear karein">Clear</button>
+          <input id="messageInput" type="text" placeholder="Message likhein..." autocomplete="off" disabled />
+          <button id="sendMessage" type="submit" disabled>Send</button>
+        </form>
+      </section>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="./app.js"></script>
+  </body>
 </html>
