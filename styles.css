@@ -114,11 +114,21 @@ input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in sr
 .composer input:disabled, .composer button:disabled { opacity: .55; cursor: not-allowed; }
 .danger { color: var(--danger); }
 @media (max-width: 760px) {
-  html, body { min-height: 100%; }
-  body { background: var(--panel); }
+  html, body {
+    width: 100%;
+    min-height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--panel);
+    -webkit-text-size-adjust: 100%;
+  }
+
   .app-shell {
+    display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(18rem, 38dvh) minmax(28rem, 62dvh);
+    grid-template-rows: auto minmax(0, 1fr);
     gap: 0;
     width: 100%;
     max-width: none;
@@ -128,50 +138,206 @@ input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in sr
     padding: 0;
     overflow: hidden;
   }
-  .sidebar, .chat-pane {
+
+  .sidebar,
+  .chat-pane {
     border-left: 0;
     border-right: 0;
     border-radius: 0;
     box-shadow: none;
   }
-  .sidebar { border-top: 0; }
-  .chat-pane { border-bottom: 0; }
-  .topbar { padding: .8rem .9rem; }
-  h1 { font-size: 1.28rem; }
-  .eyebrow { font-size: .7rem; }
-  .panel { padding: .72rem .9rem; }
-  .chats-panel { padding-bottom: .8rem; }
-  label { margin-bottom: .35rem; font-size: .78rem; }
-  input { min-height: 2.75rem; padding: .68rem .78rem; font-size: 1rem; }
-  .input-row { grid-template-columns: minmax(0, 1fr) 4.4rem; }
-  .input-row button, .composer button:last-child { min-width: 4.4rem; min-height: 2.75rem; padding: .65rem .7rem; }
-  .icon-button { min-width: 2.75rem; height: 2.75rem; font-size: .84rem; }
-  .list { gap: .35rem; margin-top: .55rem; }
-  .result-item, .chat-item { grid-template-columns: 2.25rem minmax(0, 1fr); padding: .55rem; }
-  .avatar { width: 2.25rem; height: 2.25rem; font-size: .82rem; }
-  .hint, .item-preview { font-size: .76rem; }
-  .chat-header { min-height: 3.85rem; padding: .68rem .85rem; }
-  .chat-header span { font-size: .76rem; }
-  .privacy-strip { display: none; }
-  .messages { padding: .75rem .65rem; gap: .45rem; }
-  .message { max-width: 86%; padding: .52rem .62rem .4rem; font-size: .95rem; }
-  .message-meta { font-size: .64rem; }
+
+  .sidebar {
+    max-height: 43dvh;
+    min-height: 0;
+    border-top: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chat-pane {
+    min-height: 0;
+    border-bottom: 0;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: .62rem .78rem;
+  }
+
+  h1 { font-size: 1.18rem; }
+  h2 { font-size: .88rem; }
+  .eyebrow { font-size: .66rem; }
+
+  .panel {
+    padding: .58rem .78rem;
+  }
+
+  .chats-panel {
+    max-height: 8.5rem;
+    padding-bottom: .65rem;
+    overflow-y: auto;
+  }
+
+  label {
+    margin-bottom: .32rem;
+    font-size: .76rem;
+  }
+
+  input {
+    min-height: 2.75rem;
+    padding: .68rem .78rem;
+    font-size: 1rem;
+  }
+
+  .input-row {
+    grid-template-columns: minmax(0, 1fr) 4.25rem;
+    gap: .42rem;
+  }
+
+  .input-row button,
+  .composer button:last-child {
+    min-width: 4.25rem;
+    min-height: 2.75rem;
+    padding: .65rem .65rem;
+  }
+
+  .icon-button {
+    min-width: 2.65rem;
+    height: 2.65rem;
+    font-size: .78rem;
+  }
+
+  .hint {
+    min-height: auto;
+    margin-top: .35rem;
+    font-size: .74rem;
+    line-height: 1.3;
+  }
+
+  .list {
+    gap: .3rem;
+    margin-top: .45rem;
+  }
+
+  .result-item,
+  .chat-item {
+    grid-template-columns: 2.15rem minmax(0, 1fr);
+    gap: .52rem;
+    min-height: 3.15rem;
+    padding: .48rem;
+  }
+
+  .avatar {
+    width: 2.15rem;
+    height: 2.15rem;
+    font-size: .8rem;
+  }
+
+  .item-title {
+    font-size: .88rem;
+  }
+
+  .item-preview {
+    font-size: .74rem;
+  }
+
+  .item-title time {
+    font-size: .66rem;
+  }
+
+  .section-heading span {
+    font-size: .74rem;
+  }
+
+  .chat-header {
+    min-height: 3.65rem;
+    padding: .58rem .75rem;
+    gap: .62rem;
+  }
+
+  .chat-header p {
+    max-width: calc(100vw - 5rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .95rem;
+  }
+
+  .chat-header span {
+    max-width: calc(100vw - 5rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .72rem;
+  }
+
+  .privacy-strip {
+    display: none;
+  }
+
+  .messages {
+    min-height: 0;
+    padding: .72rem .62rem;
+    gap: .42rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .empty-state {
+    max-width: 18rem;
+    padding: 0 1rem;
+    font-size: .9rem;
+  }
+
+  .message {
+    max-width: 88%;
+    padding: .5rem .6rem .38rem;
+    border-radius: 8px;
+    font-size: .95rem;
+  }
+
+  .message-meta {
+    margin-top: .2rem;
+    font-size: .63rem;
+  }
+
   .composer {
     grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: .42rem;
-    padding: .55rem;
-    padding-bottom: max(.55rem, env(safe-area-inset-bottom));
+    gap: .4rem;
+    padding: .5rem;
+    padding-bottom: max(.5rem, env(safe-area-inset-bottom));
   }
-  .composer input { min-height: 2.85rem; }
-  .composer .danger { min-width: 3.2rem; width: 3.2rem; font-size: .72rem; }
+
+  .composer input {
+    min-height: 2.85rem;
+    border-radius: 999px;
+  }
+
+  .composer .danger {
+    min-width: 3rem;
+    width: 3rem;
+    padding: 0 .35rem;
+    font-size: .68rem;
+  }
 }
 
 @media (max-width: 430px) {
-  .app-shell { grid-template-rows: minmax(17rem, 36dvh) minmax(29rem, 64dvh); }
-  .topbar { padding: .7rem .8rem; }
-  .panel { padding: .62rem .8rem; }
-  .chat-header { padding: .62rem .75rem; }
-  .chat-header p { font-size: .95rem; }
-  .chat-header span { max-width: 14.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .message { max-width: 90%; }
+  .sidebar { max-height: 40dvh; }
+  .topbar { padding: .55rem .68rem; }
+  .panel { padding: .52rem .68rem; }
+  .chats-panel { max-height: 7.2rem; }
+  .chat-header { padding: .55rem .68rem; }
+  .message { max-width: 91%; }
+}
+
+@media (max-width: 380px) {
+  .sidebar { max-height: 38dvh; }
+  .chats-panel { display: none; }
+  .input-row { grid-template-columns: minmax(0, 1fr) 4rem; }
+  .input-row button,
+  .composer button:last-child { min-width: 4rem; }
 }
