@@ -17,7 +17,8 @@ const els = {
   currentUser: document.querySelector("#currentUser"), saveUser: document.querySelector("#saveUser"), identityStatus: document.querySelector("#identityStatus"),
   searchUser: document.querySelector("#searchUser"), searchResults: document.querySelector("#searchResults"), chatList: document.querySelector("#chatList"), chatCount: document.querySelector("#chatCount"),
   activeAvatar: document.querySelector("#activeAvatar"), activeName: document.querySelector("#activeName"), activeMeta: document.querySelector("#activeMeta"), messages: document.querySelector("#messages"),
-  composer: document.querySelector("#composer"), messageInput: document.querySelector("#messageInput"), sendMessage: document.querySelector("#sendMessage"), clearChat: document.querySelector("#clearChat"), themeToggle: document.querySelector("#themeToggle")
+  composer: document.querySelector("#composer"), messageInput: document.querySelector("#messageInput"), sendMessage: document.querySelector("#sendMessage"), clearChat: document.querySelector("#clearChat"), themeToggle: document.querySelector("#themeToggle"),
+  backToList: document.querySelector("#backToList")
 };
 
 const localKey = "firebase-private-chat";
@@ -26,9 +27,10 @@ let state = {
   currentUserId: localStorage.getItem(localKey + ":userId") || "",
   activeUser: null,
   activeChatId: "",
+  searchedUsers: JSON.parse(localStorage.getItem(localKey + ":searchedUsers") || "[]"),
   chats: [],
   messages: [],
-  theme: localStorage.getItem(localKey + ":theme") || "light",
+  theme: localStorage.getItem(localKey + ":theme") || "dark",
   ready: false
 };
 let unsubscribeChats = null;
@@ -56,8 +58,10 @@ function showEmpty(text) { const empty = document.createElement("p"); empty.clas
 
 function renderShell() {
   document.body.classList.toggle("dark", state.theme === "dark");
+  document.body.classList.toggle("chat-open", Boolean(state.activeUser && state.activeChatId));
   els.currentUser.value = state.currentUserId;
   els.searchUser.disabled = !state.ready || !state.currentUserId;
+  renderUsers();
   renderChatList();
   renderActiveChat();
 }
@@ -120,7 +124,6 @@ async function saveCurrentUser() {
   localStorage.setItem(localKey + ":userId", userId);
   setStatus("Live as " + userId, "ok");
   listenToChats();
-  renderSearchHint();
   renderShell();
 }
 
@@ -148,9 +151,14 @@ function listenToMessages(chatId) {
 async function searchUser() {
   const queryId = cleanId(els.searchUser.value);
   els.searchResults.innerHTML = "";
-  if (!queryId) return renderSearchHint();
-  if (!/^[a-z0-9_]{1,24}$/.test(queryId)) return appendHint(els.searchResults, "Sirf small letters, numbers, underscore use karein.");
-  if (queryId === state.currentUserId) return appendHint(els.searchResults, "Apni hi ID par chat open nahi hogi.");
+  if (!queryId) return renderUsers();
+  if (!/^[a-z0-9_]{1,24}$/.test(queryId)) {
+    return appendHint(els.searchResults, "Sirf small letters, numbers, underscore use karein.");
+  }
+  if (queryId === state.currentUserId) {
+    return appendHint(els.searchResults, "Apni hi ID par chat open nahi hogi.");
+  }
+
   const snap = await db.collection("users")
     .orderBy("id")
     .startAt(queryId)
@@ -159,14 +167,29 @@ async function searchUser() {
     .get();
   const users = snap.docs
     .map((item) => item.data())
-    .filter((user) => user.id !== state.currentUserId);
-  if (!users.length) return appendHint(els.searchResults, "Ye ID abhi registered nahi hai. Pehle dusre user ko apni ID save karni hogi.");
+    .filter((user) => user.id && user.id !== state.currentUserId);
+
+  if (!users.length) {
+    return appendHint(els.searchResults, "Is ID se koi user nahi mila.");
+  }
+
   users.forEach((user) => els.searchResults.append(createUserButton(user)));
 }
 
-function renderSearchHint() {
+function renderUsers() {
   els.searchResults.innerHTML = "";
-  appendHint(els.searchResults, state.currentUserId ? "Jis user se chat karni hai uski exact ID search karein." : "Pehle apni User ID save karein.");
+  if (!state.currentUserId) return appendHint(els.searchResults, "Pehle apni User ID save karein.");
+  if (!state.ready) return appendHint(els.searchResults, "Firebase connect ho raha hai...");
+
+  const users = state.searchedUsers
+    .filter((user) => user.id && user.id !== state.currentUserId)
+    .slice(0, 30);
+
+  if (!users.length) {
+    return appendHint(els.searchResults, "Jis user se chat karni hai uski ID search karein.");
+  }
+
+  users.forEach((user) => els.searchResults.append(createUserButton(user)));
 }
 
 function createUserButton(user) {
@@ -193,14 +216,24 @@ async function openChat(otherUser) {
       updatedAt: serverTimestamp()
     });
   }
+  saveSearchedUser(otherUser);
   state.activeUser = { id: otherUser.id, name: otherUser.name || otherUser.id, uid: otherUser.uid };
   state.activeChatId = chatId;
   state.messages = [];
   els.searchUser.value = "";
-  renderSearchHint();
+  renderUsers();
   listenToMessages(chatId);
   renderShell();
   els.messageInput.focus();
+}
+
+function saveSearchedUser(user) {
+  const nextUser = { id: user.id, name: user.name || user.id, uid: user.uid };
+  state.searchedUsers = [
+    nextUser,
+    ...state.searchedUsers.filter((item) => item.id !== nextUser.id)
+  ].slice(0, 30);
+  localStorage.setItem(localKey + ":searchedUsers", JSON.stringify(state.searchedUsers));
 }
 
 async function sendMessage(text) {
@@ -229,9 +262,16 @@ els.searchUser.addEventListener("input", () => searchUser().catch((error) => set
 els.composer.addEventListener("submit", (event) => { event.preventDefault(); sendMessage(els.messageInput.value).catch((error) => setStatus(friendlyFirebaseError(error), "error")); });
 els.clearChat.addEventListener("click", () => clearChat().catch((error) => setStatus(friendlyFirebaseError(error), "error")));
 els.themeToggle.addEventListener("click", () => { state.theme = state.theme === "dark" ? "light" : "dark"; localStorage.setItem(localKey + ":theme", state.theme); renderShell(); });
+els.backToList.addEventListener("click", () => {
+  state.activeUser = null;
+  state.activeChatId = "";
+  state.messages = [];
+  if (unsubscribeMessages) unsubscribeMessages();
+  renderShell();
+});
 
 renderShell();
-renderSearchHint();
+renderUsers();
 auth.signInAnonymously().catch((error) => setStatus("Firebase sign-in failed: " + friendlyFirebaseError(error), "error"));
 auth.onAuthStateChanged((user) => {
   if (!user) return;
