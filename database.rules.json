@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "status": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid == $uid",
+        ".validate": "newData.hasChildren(['state', 'userId', 'lastChanged']) && (newData.child('state').val() == 'online' || newData.child('state').val() == 'offline')"
+      }
+    }
+  }
+}
